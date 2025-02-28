@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Gallery</title>
+    <style>
+        /* style.css */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f0; /* Soft off-white/beige background */
+            color: #444; /* Darker, softer text color */
+        }
+
+        header {
+            background-color: #e0e8e9; /* Light blue-gray header */
+            color: #444; /* Darker text for better contrast on header */
+            padding: 20px 0;
+            text-align: center;
+            /* Subtle gradient for header */
+            background-image: linear-gradient(to bottom, #e0e8e9, #d2dde0);
+            border-bottom: 1px solid #c8d3d5; /* Subtle border to define header */
+        }
+
+        .website-heading {
+            font-size: 2.2em; /* Slightly larger heading */
+            margin-bottom: 10px; /* Less bottom margin */
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Softer text shadow */
+            color: #3a5a64; /* Slightly more prominent heading color */
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Slightly reduced gap */
+            align-items: center;
+        }
+
+        header button, header input[type="text"] {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle shadow on buttons/input */
+        }
+
+        header button {
+            background-color: #2ecc71; /* Green button color - more vibrant */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        header button:hover {
+            background-color: #27ae60; /* Darker green on hover */
+        }
+
+        header input[type="text"] {
+            border: 1px solid #ddd;
+            /* Slightly different input background */
+            background-color: #fdfdfd;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .product-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+            gap: 25px; /* Slightly increased gap */
+        }
+
+        .product {
+            background-color: #fafafa; /* Softer white for product cards */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08); /* Lighter, softer box shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product:hover {
+            transform: scale(1.03); /* Less aggressive scale on hover */
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12); /* Slightly stronger shadow on hover */
+        }
+
+        .product-image-container {
+            height: 220px; /* Slightly taller image container - you can adjust this value */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0; /* Lighter placeholder background */
+        }
+
+        .product-image-container img {
+            width: 100%; /* Make sure image takes full width of container */
+            height: 100%; /* Make sure image takes full height of container */
+            display: block;
+            object-fit: cover; /*  This is important: tell image to cover the area, cropping if necessary */
+        }
+
+        .product-details {
+            padding: 15px 20px; /* Slightly more horizontal padding */
+        }
+
+        .product-name {
+            font-size: 1.25em; /* Slightly larger product name */
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333; /* Darker product name color */
+        }
+
+        .product-description {
+            color: #777; /* Softer description color */
+            margin-bottom: 12px;
+            line-height: 1.5; /* Improved line height for readability */
+        }
+
+        .product-price {
+            font-weight: 600; /* Slightly bolder price */
+            color: #2ecc71; /* Green price color - same as button */
+            margin-bottom: 18px; /* More bottom margin for price */
+            font-size: 1.1em; /* Slightly larger price font */
+        }
+
+        .delete-button-container {
+            padding: 0 20px 20px 20px; /* More padding for delete button container */
+            text-align: right;
+        }
+
+        .delete-button {
+            background-color: #e74c3c; /* Softer red for delete button */
+            color: white;
+            border: none;
+            padding: 9px 14px; /* Slightly larger button padding */
+            border-radius: 6px; /* More rounded delete button */
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle shadow on delete button */
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b; /* Darker red on hover */
+        }
+
+        /* Modal Styles - Minor adjustments for consistency */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Slightly darker modal backdrop */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto; /* Adjusted top margin for modal */
+            padding: 25px 30px; /* More padding inside modal */
+            border: none; /* Removed border for cleaner look */
+            width: 70%; /* Slightly wider modal on larger screens */
+            max-width: 600px; /* Max width for modal */
+            border-radius: 10px; /* More rounded modal corners */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2); /* More prominent modal shadow */
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            right: 15px;
+            top: 5px; /* Adjusted close button position */
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0.7; /* Slightly less opaque close button */
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #888;
+            text-decoration: none;
+            opacity: 1; /* Full opacity on hover/focus */
+        }
+
+        #productForm label {
+            display: block;
+            margin-bottom: 8px; /* More margin below labels */
+            font-weight: 600; /* Slightly bolder labels */
+            color: #555; /* Slightly darker label color */
+        }
+
+        #productForm input[type="text"],
+        #productForm input[type="number"],
+        #productForm textarea {
+            width: 100%;
+            padding: 12px; /* More padding for form inputs */
+            margin-bottom: 20px; /* More margin below inputs */
+            border: 1px solid #ccc; /* Softer border for inputs */
+            border-radius: 6px; /* Rounded corners for inputs */
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #fdfdfd; /* Input background color */
+        }
+
+        #productForm textarea {
+            height: 120px; /* Slightly taller textarea */
+            resize: vertical;
+        }
+
+        #productForm button[type="submit"] {
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 20px; /* More padding for submit button */
+            border: none;
+            border-radius: 6px; /* Rounded submit button */
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Subtle shadow on submit button */
+        }
+
+        #productForm button[type="submit"]:hover {
+            background-color: #27ae60;
+        }
+
+
+        /* Responsive Grid (Optional - for better mobile experience) */
+        @media (max-width: 768px) {
+            .product-gallery {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+            }
+            .modal-content {
+                width: 85%; /* Wider modal on medium screens */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-gallery {
+                grid-template-columns: 1fr; /* 1 column on small screens */
+            }
+            .modal-content {
+                width: 95%; /* Almost full width modal on small screens */
+                margin-top: 5%; /* Adjust top margin on small screens */
+            }
+            .header-buttons {
+                flex-direction: column; /* Stack buttons in header on small screens */
+                gap: 10px;
+            }
+            header input[type="text"] {
+                width: 90%; /* Input full width on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="website-heading">Car Showcase Gallery</h1>
+        <div class="header-buttons">
+            <button id="addProductBtn">Add New Car</button>
+            <input type="text" id="searchProduct" placeholder="Search Cars...">
+        </div>
+    </header>
+
+    <main>
+        <div id="productGallery" class="product-gallery">
+            </div>
+    </main>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Add/Edit Car Details</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                <label for="productName">Car Model Name:</label>
+                <input type="text" id="productName" required><br><br>
+                <label for="productDescription">Description:</label>
+                <textarea id="productDescription" required></textarea><br><br>
+                <label for="productPrice">Price (USD):</label>
+                <input type="number" id="productPrice" min="0" required><br><br>
+                <label for="productImage">Image URL (Optional):</label>
+                <input type="text" id="productImage" placeholder="Enter image URL"><br><br>
+                <button type="submit">Save Car</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* script.js */
+        document.addEventListener('DOMContentLoaded', function() {
+            const addProductBtn = document.getElementById('addProductBtn');
+            const searchProductInput = document.getElementById('searchProduct');
+            const productGallery = document.getElementById('productGallery');
+            const productModal = document.getElementById('productModal');
+            const modalCloseBtn = document.querySelector('.close-button');
+            const productForm = document.getElementById('productForm');
+            const productIdInput = document.getElementById('productId');
+            const productNameInput = document.getElementById('productName');
+            const productDescriptionInput = document.getElementById('productDescription');
+            const productPriceInput = document.getElementById('productPrice');
+            const productImageInput = document.getElementById('productImage');
+
+            let products = [ // Car Data - Names and Images from Unsplash/Pexels (free to use)
+                { id: 1, name: 'Ford Mustang GT', description: 'Iconic American Muscle Car', price: 45000, imageUrl: 'https://images.unsplash.com/photo-1558981403-c55224d102d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjkxMg&ixlib=rb-4.0.3&q=80&rect=0%2C121%2C2048%2C1152&s=8a9c397f7dd953a614b8eb1859104d69' }, // Ford Mustang - Unsplash
+                { id: 2, name: 'Porsche 911 Carrera', description: 'German Engineering at its Finest', price: 120000, imageUrl: 'https://images.unsplash.com/photo-1549399088-18e548429991?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjkzMw&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C2000%2C2000&s=6984c13894a941a64cc56a3698269982' }, // Porsche 911 - Unsplash
+                { id: 3, name: 'Tesla Model S', description: 'The Future of Electric Luxury', price: 95000, imageUrl: 'https://images.unsplash.com/photo-1559548342-255090494a74?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjk0Ny&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=761c6c3f45e4368d26858568837491ca' }, // Tesla Model S - Unsplash
+                { id: 4, name: 'Audi R8', description: 'Sleek and Powerful Sports Car', price: 165000, imageUrl: 'https://images.unsplash.com/photo-1564856099608-4929d6581883?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjk2MA&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=b13a95a98f0581b7a1d925b2d4535544' }, // Audi R8 - Unsplash
+                { id: 5, name: 'BMW M3 Sedan', description: 'High-Performance Sports Sedan', price: 78000, imageUrl: 'https://images.unsplash.com/photo-1617489445379-4f3cf40c1d5c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjk3Mg&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=002b65997477d637b6f77d80cb50b4b6' }, // BMW M3 - Unsplash
+                { id: 6, name: 'Mercedes-Benz C-Class', description: 'Luxury and Comfort in One', price: 60000, imageUrl: 'https://images.unsplash.com/photo-1605556613944-74c8490213a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjk4Ng&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=50d6a06884599896a5d3f3f360a6b62e' }, // Mercedes C-Class - Unsplash
+                { id: 7, name: 'Land Rover Range Rover', description: 'Luxury SUV, Unmatched Versatility', price: 110000, imageUrl: 'https://images.unsplash.com/photo-1605556581493-a4ff4587b9b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMjk5OQ&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=18db0841a8300e7159f8a46600375131' }, // Range Rover - Unsplash
+                { id: 8, name: 'Honda Civic Type R', description: 'Sporty and Fun Compact Car', price: 38000, imageUrl: 'https://images.unsplash.com/photo-1568346941201-0d4f595a5448?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMzAxMQ&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=e2315b9657ab84f6b4d4b1a9f48e959a' }, // Honda Civic Type R - Unsplash
+                { id: 9, name: 'Chevrolet Corvette Stingray', description: 'American Classic Sports Car', price: 70000, imageUrl: 'https://images.unsplash.com/photo-1614485338930-802f5bbcb774?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&gif-player-preview=gif&h=300&ixid=MnwxfDB8MXxyYW5kb218MHx8fHx8fHx8MTY3NjYyMzAyNA&ixlib=rb-4.0.3&q=80&rect=0%2C0%2C1920%2C1920&s=15878399853a3219a6a736053f034e62' }  // Corvette - Unsplash
+            ];
+
+            let nextProductId = 10; // To assign unique IDs to new products
+
+            function renderProducts(productList) {
+                productGallery.innerHTML = ''; // Clear existing gallery
+                if (!productList || productList.length === 0) {
+                    productGallery.innerHTML = '<p>No cars found.</p>';
+                    return;
+                }
+                productList.forEach(product => {
+                    const productElement = createProductElement(product);
+                    productGallery.appendChild(productElement);
+                });
+            }
+
+            function createProductElement(product) {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+
+                const imageContainer = document.createElement('div');
+                imageContainer.classList.add('product-image-container');
+                const img = document.createElement('img');
+                img.src = product.imageUrl || 'https://via.placeholder.com/150'; // Default placeholder if no image URL
+                img.alt = product.name;
+                imageContainer.appendChild(img);
+                imageContainer.addEventListener('click', () => openEditModal(product.id)); // Edit on image click
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('product-details');
+                const namePara = document.createElement('p');
+                namePara.classList.add('product-name');
+                namePara.textContent = product.name;
+                const descriptionPara = document.createElement('p');
+                descriptionPara.classList.add('product-description');
+                descriptionPara.textContent = product.description;
+                const pricePara = document.createElement('p');
+                pricePara.classList.add('product-price');
+                pricePara.textContent = `$${product.price.toFixed(2)}`; // Format price
+
+                detailsDiv.appendChild(namePara);
+                detailsDiv.appendChild(descriptionPara);
+                detailsDiv.appendChild(pricePara);
+
+                const deleteButtonContainer = document.createElement('div');
+                deleteButtonContainer.classList.add('delete-button-container');
+                const deleteButton = document.createElement('button');
+                deleteButton.classList.add('delete-button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent product click when delete is clicked
+                    deleteProduct(product.id);
+                });
+                deleteButtonContainer.appendChild(deleteButton);
+
+
+                productDiv.appendChild(imageContainer);
+                productDiv.appendChild(detailsDiv);
+                productDiv.appendChild(deleteButtonContainer);
+
+                return productDiv;
+            }
+
+            function openAddModal() {
+                productIdInput.value = ''; // Clear product ID for add mode
+                productNameInput.value = '';
+                productDescriptionInput.value = '';
+                productPriceInput.value = '';
+                productImageInput.value = '';
+                productModal.style.display = 'block';
+            }
+
+            function openEditModal(productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    productIdInput.value = product.id;
+                    productNameInput.value = product.name;
+                    productDescriptionInput.value = product.description;
+                    productPriceInput.value = product.price;
+                    productImageInput.value = product.imageUrl;
+                    productModal.style.display = 'block';
+                }
+            }
+
+            function closeProductModal() {
+                productModal.style.display = 'none';
+            }
+
+            function saveProduct(event) {
+                event.preventDefault();
+                const productId = productIdInput.value;
+                const productName = productNameInput.value;
+                const productDescription = productDescriptionInput.value;
+                const productPrice = parseFloat(productPriceInput.value);
+                const productImage = productImageInput.value;
+
+                if (productId) { // Edit existing product
+                    const productIndex = products.findIndex(p => p.id === parseInt(productId));
+                    if (productIndex > -1) {
+                        products[productIndex] = { id: parseInt(productId), name: productName, description: productDescription, price: productPrice, imageUrl: productImage };
+                    }
+                } else { // Add new product
+                    const newProduct = { id: nextProductId++, name: productName, description: productDescription, price: productPrice, imageUrl: productImage };
+                    products.push(newProduct);
+                }
+
+                renderProducts(products);
+                closeProductModal();
+            }
+
+            function deleteProduct(productId) {
+                products = products.filter(product => product.id !== productId);
+                renderProducts(products);
+            }
+
+            function searchProducts(searchTerm) {
+                const filteredProducts = products.filter(product =>
+                    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                renderProducts(filteredProducts);
+            }
+
+            // Event Listeners
+            addProductBtn.addEventListener('click', openAddModal);
+            modalCloseBtn.addEventListener('click', closeProductModal);
+            window.addEventListener('click', function(event) { // Close modal if clicked outside
+                if (event.target == productModal) {
+                    closeProductModal();
+                }
+            });
+            productForm.addEventListener('submit', saveProduct);
+            searchProductInput.addEventListener('input', function(e) {
+                searchProducts(e.target.value);
+            });
+
+            // Initial product rendering
+            renderProducts(products);
+        });
+    </script>
+</body>
+</html>
